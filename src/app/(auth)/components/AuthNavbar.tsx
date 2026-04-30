@@ -1,5 +1,6 @@
 "use client";
 
+import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon, SunIcon } from "@phosphor-icons/react";
 import Link from "next/link";
@@ -14,9 +15,7 @@ export default function AuthNavbar() {
             Go back
           </Link>
         </Button>
-        <Button variant="ghost" size="icon" aria-label="Toggle theme">
-          <SunIcon size={18} weight="bold" />
-        </Button>
+        <ThemeToggle />
       </div>
     </header>
   );
