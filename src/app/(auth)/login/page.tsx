@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
-import { EyeIcon } from "@phosphor-icons/react";
+import { EyeClosedIcon, EyeIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 import { Spinner } from "@/components/ui/spinner";
 
@@ -30,6 +30,7 @@ export default function LoginPage() {
   }>({});
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const loginWithGoogle = async () => {
     setLoadingGoogle(true);
@@ -109,7 +110,7 @@ export default function LoginPage() {
 
         <div className="relative">
           <Input
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Password"
             value={formData.password}
             onChange={(event) =>
@@ -120,8 +121,15 @@ export default function LoginPage() {
             }
             aria-invalid={Boolean(errors.password)}
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer">
-            <EyeIcon size={16} weight="bold" />
+          <span
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer"
+          >
+            {showPassword ? (
+              <EyeClosedIcon size={16} weight="bold" />
+            ) : (
+              <EyeIcon size={16} weight="bold" />
+            )}
           </span>
         </div>
         {errors.password ? (

@@ -4,12 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { ArrowLeftIcon, SunIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
+import { EyeClosedIcon, EyeIcon } from "@phosphor-icons/react";
 
 const signupSchema = z
   .object({
@@ -52,6 +52,8 @@ export default function SignupPage() {
   }>({});
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const loginWithGoogle = async () => {
     setLoadingGoogle(true);
@@ -169,36 +171,60 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <Input
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={(event) =>
-              setFormData((prev) => ({
-                ...prev,
-                password: event.target.value,
-              }))
-            }
-            aria-invalid={Boolean(errors.password)}
-          />
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={formData.password}
+              onChange={(event) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  password: event.target.value,
+                }))
+              }
+              aria-invalid={Boolean(errors.password)}
+            />
+            <span
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer"
+            >
+              {showPassword ? (
+                <EyeClosedIcon size={16} weight="bold" />
+              ) : (
+                <EyeIcon size={16} weight="bold" />
+              )}
+            </span>
+          </div>
           {errors.password ? (
             <p className="mt-1 text-sm text-destructive">{errors.password}</p>
           ) : null}
         </div>
 
         <div>
-          <Input
-            type="password"
-            placeholder="Confirm password"
-            value={formData.confirmPassword}
-            onChange={(event) =>
-              setFormData((prev) => ({
-                ...prev,
-                confirmPassword: event.target.value,
-              }))
-            }
-            aria-invalid={Boolean(errors.confirmPassword)}
-          />
+          <div className="relative">
+            <Input
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm password"
+              value={formData.confirmPassword}
+              onChange={(event) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  confirmPassword: event.target.value,
+                }))
+              }
+              aria-invalid={Boolean(errors.confirmPassword)}
+            />
+            <span
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer"
+            >
+              {showConfirmPassword ? (
+                <EyeClosedIcon size={16} weight="bold" />
+              ) : (
+                <EyeIcon size={16} weight="bold" />
+              )}
+            </span>
+          </div>
           {errors.confirmPassword ? (
             <p className="mt-1 text-sm text-destructive">
               {errors.confirmPassword}
