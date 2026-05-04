@@ -8,8 +8,19 @@ import {
   ChatCircleIcon,
   CaretDownIcon,
   SignInIcon,
+  GearSixIcon,
+  SignOutIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 type User = {
   id: string;
@@ -23,10 +34,9 @@ type User = {
 export default function TopRightActions() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const supabase = createClient();
 
   useEffect(() => {
-    const supabase = createClient();
-
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user as User | null);
       setLoading(false);
@@ -40,7 +50,12 @@ export default function TopRightActions() {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [supabase.auth]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
 
   if (loading) {
     return (
@@ -57,22 +72,45 @@ export default function TopRightActions() {
     <header className="fixed top-4 right-4 z-50 flex items-center">
       {user ? (
         <div className="flex items-center gap-3">
-          <Button variant="ghost" className="h-8 w-16">
-            <div className="relative h-4 w-4 overflow-hidden rounded-full bg-muted">
-              {user.user_metadata?.avatar_url ? (
-                <img
-                  src={user.user_metadata.avatar_url}
-                  alt={user.user_metadata.full_name || "User"}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-sm font-medium">
-                  {user.email?.charAt(0).toUpperCase()}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-16">
+                <div className="relative h-4 w-4 overflow-hidden rounded-full bg-muted">
+                  {user.user_metadata?.avatar_url ? (
+                    <img
+                      src={user.user_metadata.avatar_url}
+                      alt={user.user_metadata.full_name || "User"}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm font-medium">
+                      {user.email?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <CaretDownIcon size={16} weight="bold" />
-          </Button>
+                <CaretDownIcon size={16} weight="bold" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-25" align="center">
+              <DropdownMenuGroup>
+                <Link href="/profile">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <GearSixIcon size={32} weight="bold" /> Settings
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuGroup>
+
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={handleLogout}
+                >
+                  <SignOutIcon size={32} weight="bold" />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ) : (
         <Link href="/login">
