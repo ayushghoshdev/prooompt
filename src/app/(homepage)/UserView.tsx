@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
+import AiPromptBox from "./components/AiPromptBox";
 
 export default function UserView({ user }: { user: User }) {
   const supabase = createClient();
@@ -30,24 +31,14 @@ export default function UserView({ user }: { user: User }) {
     }
   }, [user]);
 
-  const logout = async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
-  };
-
   return (
-    <div>
-      <img
-        src={profile?.profilePicture}
-        alt="profile picture"
-        width={80}
-        height={80}
-      />
-
-      <p>Email: {profile?.email}</p>
-      <p>Name: {profile?.name}</p>
-
-      <Button onClick={logout}>Logout</Button>
+    <div className="flex min-h-screen flex-col items-center justify-center px-4">
+      <div className="w-full max-w-xl space-y-2">
+        <h1 className="text-2xl font-medium">
+          What can I help with, {profile?.name.split(" ")[0]}?
+        </h1>
+        <AiPromptBox />
+      </div>
     </div>
   );
 }

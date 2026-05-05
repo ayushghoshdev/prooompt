@@ -9,7 +9,7 @@ export default function HomeLayout({
     <div className="min-h-screen">
       <div className="flex">
         <Sidebar />
-        <main className="flex items-center justify-center min-h-[calc(100vh-200px)] px-6">
+        <main className="flex-1 flex items-center justify-center min-h-[calc(100vh-200px)] px-6">
           {children}
         </main>
       </div>
