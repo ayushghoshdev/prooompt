@@ -21,6 +21,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Spinner } from "./ui/spinner";
 
 type User = {
   id: string;
@@ -60,9 +61,7 @@ export default function TopRightActions() {
   if (loading) {
     return (
       <header className="fixed top-4 right-4 z-50 flex items-center">
-        <Button variant="ghost" size="icon">
-          <ChatCircleIcon size={32} weight="bold" />
-        </Button>
+        <Spinner className="size-4" />
         <ThemeToggle />
       </header>
     );
@@ -93,7 +92,7 @@ export default function TopRightActions() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-25" align="center">
               <DropdownMenuGroup>
-                <Link href="/profile">
+                <Link href="/settings">
                   <DropdownMenuItem className="cursor-pointer">
                     <GearSixIcon size={32} weight="bold" /> Settings
                   </DropdownMenuItem>
