@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { EyeClosedIcon, EyeIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 import { Spinner } from "@/components/ui/spinner";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email address"),
@@ -31,6 +32,17 @@ export default function LoginPage() {
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showError, setShowError] = useState(false);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (searchParams.get("error")) {
+      setShowError(true);
+      router.replace(window.location.pathname);
+    }
+  }, [searchParams, router]);
 
   const loginWithGoogle = async () => {
     setLoadingGoogle(true);
@@ -90,6 +102,13 @@ export default function LoginPage() {
       </div>
 
       <div className="space-y-3">
+        {showError && (
+          <div className="bg-destructive/15 rounded-lg px-2 py-1.5">
+            <p className="text-sm text-destructive">
+              There was an error logging you in, please try again.
+            </p>
+          </div>
+        )}
         <div>
           <Input
             type="email"
