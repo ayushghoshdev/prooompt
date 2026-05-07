@@ -14,10 +14,10 @@ export default function AiPromptBox() {
 
   // make the prompt box turn into the menu box when a option is selected
   return (
-    <div className="bg-secondary rounded-lg p-4 w-[500px]">
+    <div className="bg-secondary rounded-lg px-4 pb-4 w-[500px]">
       <Textarea
         placeholder="Ask anything"
-        className="resize-none w-full"
+        className="resize-none w-full py-4"
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
       />
