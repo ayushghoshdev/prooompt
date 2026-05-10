@@ -48,86 +48,67 @@ export default function ModelSelector({
   }
 
   return (
-    <div className="h-115 overflow-hidden rounded-lg bg-secondary">
-      <div className="flex h-full flex-col">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onBack}
-              className="mt-0.5"
-            >
-              <ArrowLeftIcon size={32} weight="bold" />
-            </Button>
-            <p>Select model</p>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">
-              {loading
-                ? "Fetching available models..."
-                : `${models.length} model${models.length === 1 ? "" : "s"} available`}
-            </p>
-          </div>
+    <div className="h-115 flex flex-col">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-primary/5">
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="h-8 w-8 rounded-full"
+          >
+            <ArrowLeftIcon size={20} weight="bold" />
+          </Button>
+          <p className="text-sm font-semibold">Select model</p>
         </div>
-        <div className="overflow-y-auto px-3 py-2">
-          {loading ? (
-            <div className="rounded-lg bg-muted px-4 py-6 text-sm text-muted-foreground">
-              Loading models...
-            </div>
-          ) : models.length === 0 ? (
-            <div className="rounded-lg bg-muted px-4 py-6 text-sm text-muted-foreground">
-              No models available right now.
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {models.map((model) => {
-                const isSelected = model.id === selectedModelId;
-                return (
-                  <button
-                    key={model.id}
-                    type="button"
-                    onClick={() => onSelectModel(model.id)}
-                    className={`block w-full rounded-2xl px-4 py-4 text-left transition duration-150 ${
-                      isSelected
-                        ? "bg-primary/10"
-                        : "bg-background hover:bg-muted"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-semibold text-foreground">
-                          {model.name}
-                        </p>
-                      </div>
-                      <span className="rounded-full bg-muted px-2 py-1 text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-                        {model.architecture.modality}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      {model.description}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-muted-foreground">
-                      <span className="rounded-full bg-muted px-2 py-1">
-                        context {model.context_length}
-                      </span>
-                      <span className="rounded-full bg-muted px-2 py-1">
-                        max completion{" "}
-                        {model.top_provider?.max_completion_tokens ?? "-"}
-                      </span>
-                      <span className="rounded-full bg-muted px-2 py-1">
-                        prompt ${model.pricing.prompt}
-                      </span>
-                      <span className="rounded-full bg-muted px-2 py-1">
-                        completion ${model.pricing.completion}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+        <div>
+          <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+            {loading ? "Loading..." : `${models.length} available`}
+          </p>
         </div>
+      </div>
+      <div className="overflow-y-auto px-3 py-2 flex-1 scrollbar-thin scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/40">
+        {loading ? (
+          <div className="rounded-lg bg-muted px-4 py-6 text-sm text-muted-foreground">
+            Loading models...
+          </div>
+        ) : models.length === 0 ? (
+          <div className="rounded-lg bg-muted px-4 py-6 text-sm text-muted-foreground">
+            No models available right now.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {models.map((model) => {
+              const isSelected = model.id === selectedModelId;
+              return (
+                <button
+                  key={model.id}
+                  type="button"
+                  onClick={() => onSelectModel(model.id)}
+                  className={`block w-full rounded-2xl px-4 py-4 text-left transition duration-150 ${
+                    isSelected
+                      ? "bg-primary/10"
+                      : "bg-background hover:bg-muted"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">
+                        {model.name}
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-muted px-2 py-1 text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+                      {model.architecture.modality}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    {model.description}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
