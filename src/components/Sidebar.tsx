@@ -74,6 +74,7 @@ export default function Sidebar() {
               src="/icon.png"
               width={30}
               height={30}
+              loading="eager"
               alt="Icon"
               className="transition-transform duration-1000 ease-in-out hover:rotate-360"
             />
