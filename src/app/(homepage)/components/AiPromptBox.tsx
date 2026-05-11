@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Spinner } from "@/components/ui/spinner";
 import {
   ArrowUpIcon,
   LightbulbIcon,
@@ -168,7 +169,14 @@ export default function AiPromptBox() {
                   onClick={() => setIsMenuOpen(true)}
                   className="px-2 h-8 text-xs font-medium hover:bg-background/50 rounded-full transition-all active:scale-95"
                 >
-                  {loadingModels ? "Loading models..." : selectedModel.name}
+                  {loadingModels ? (
+                    <span className="flex items-center gap-2">
+                      Loading models
+                      <Spinner className="h-3.5 w-3.5 text-current" />
+                    </span>
+                  ) : (
+                    selectedModel.name
+                  )}
                 </Button>
                 <Button
                   size="icon-sm"
