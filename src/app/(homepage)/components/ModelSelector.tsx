@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftIcon } from "@phosphor-icons/react";
+import { Input } from "@/components/ui/input";
+import { ArrowLeftIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 export interface Model {
   id: string;
@@ -43,6 +45,32 @@ export default function ModelSelector({
   onBack,
   loading,
 }: ModelSelectorProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredModels = useMemo(() => {
+    if (!searchQuery.trim()) return models;
+
+    const query = searchQuery.toLowerCase();
+    return models.filter((model) => {
+      const name = model.name.toLowerCase();
+      const description = (model.description || "").toLowerCase();
+      const id = model.id.toLowerCase();
+
+      const arch = model.architecture;
+      const architectureMatch =
+        (arch.modality?.toLowerCase().includes(query) ?? false) ||
+        (arch.tokenizer?.toLowerCase().includes(query) ?? false) ||
+        (arch.instruct_type?.toLowerCase().includes(query) ?? false);
+
+      return (
+        name.includes(query) ||
+        description.includes(query) ||
+        id.includes(query) ||
+        architectureMatch
+      );
+    });
+  }, [models, searchQuery]);
+
   if (!isOpen) {
     return null;
   }
@@ -78,35 +106,50 @@ export default function ModelSelector({
           </div>
         ) : (
           <div className="space-y-2">
-            {models.map((model) => {
-              const isSelected = model.id === selectedModelId;
-              return (
-                <button
-                  key={model.id}
-                  type="button"
-                  onClick={() => onSelectModel(model.id)}
-                  className={`block w-full rounded-2xl px-4 py-4 text-left transition duration-150 ${
-                    isSelected
-                      ? "bg-primary/10"
-                      : "bg-background hover:bg-muted"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">
-                        {model.name}
-                      </p>
+            <div className="flex items-center bg-input rounded-lg px-2 sticky top-0 z-10">
+              <MagnifyingGlassIcon size={16} weight="bold" />
+              <Input
+                placeholder="Search models"
+                className="bg-transparent! border-none focus-visible:ring-0 shadow-none"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            {filteredModels.length === 0 ? (
+              <div className="rounded-lg bg-muted px-4 py-6 text-sm text-muted-foreground text-center">
+                No models found matching "{searchQuery}"
+              </div>
+            ) : (
+              filteredModels.map((model) => {
+                const isSelected = model.id === selectedModelId;
+                return (
+                  <button
+                    key={model.id}
+                    type="button"
+                    onClick={() => onSelectModel(model.id)}
+                    className={`block w-full rounded-2xl px-4 py-4 text-left transition duration-150 ${
+                      isSelected
+                        ? "bg-primary/10"
+                        : "bg-background hover:bg-muted"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">
+                          {model.name}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-muted px-2 py-1 text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+                        {model.architecture.modality}
+                      </span>
                     </div>
-                    <span className="rounded-full bg-muted px-2 py-1 text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
-                      {model.architecture.modality}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {model.description}
-                  </p>
-                </button>
-              );
-            })}
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground line-clamp-2">
+                      {model.description}
+                    </p>
+                  </button>
+                );
+              })
+            )}
           </div>
         )}
       </div>
