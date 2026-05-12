@@ -77,7 +77,7 @@ export default function ModelSelector({
 
   return (
     <div className="h-115 flex flex-col">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-primary/5">
+      <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
@@ -127,10 +127,8 @@ export default function ModelSelector({
                     key={model.id}
                     type="button"
                     onClick={() => onSelectModel(model.id)}
-                    className={`block w-full rounded-2xl px-4 py-4 text-left transition duration-150 ${
-                      isSelected
-                        ? "bg-primary/10"
-                        : "bg-background hover:bg-muted"
+                    className={`cursor-pointer block w-full rounded-2xl px-4 py-4 text-left transition duration-150 ${
+                      isSelected ? "bg-muted" : "bg-transparent hover:bg-muted"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
