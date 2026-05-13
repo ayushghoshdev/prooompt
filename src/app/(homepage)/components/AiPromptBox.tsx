@@ -11,6 +11,11 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ModelSelector, { type Model } from "./ModelSelector";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const DEFAULT_MODEL_ID = "inclusionai/ring-2.6-1t:free";
 const MODEL_STORAGE_KEY = "prooompt_selected_model";
@@ -151,33 +156,57 @@ export default function AiPromptBox() {
             />
             <div className="flex justify-between">
               <div className="flex flex-1 items-center gap-3 text-muted-foreground">
-                <PaperclipIcon
-                  size={18}
-                  weight="bold"
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                />
-                <LightbulbIcon
-                  size={18}
-                  weight="bold"
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <PaperclipIcon
+                      size={18}
+                      weight="bold"
+                      className="cursor-pointer hover:text-foreground transition-colors"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Add attachment</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <LightbulbIcon
+                      size={18}
+                      weight="bold"
+                      className="cursor-pointer hover:text-foreground transition-colors"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Reasoning</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
 
               <div className="flex items-center gap-3 text-muted-foreground">
-                <Button
-                  variant="ghost"
-                  onClick={() => setIsMenuOpen(true)}
-                  className="px-2 h-8 text-xs font-medium hover:bg-background/50 rounded-full transition-all active:scale-95"
-                >
-                  {loadingModels ? (
-                    <span className="flex items-center gap-2">
-                      Loading models
-                      <Spinner className="h-3.5 w-3.5 text-current" />
-                    </span>
-                  ) : (
-                    selectedModel.name
-                  )}
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setIsMenuOpen(true)}
+                      className="px-2 h-8 text-xs font-medium hover:bg-background/50 rounded-full transition-all active:scale-95"
+                    >
+                      {loadingModels ? (
+                        <span className="flex items-center gap-2">
+                          Loading models
+                          <Spinner className="h-3.5 w-3.5 text-current" />
+                        </span>
+                      ) : (
+                        selectedModel.name
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+
+                  <TooltipContent>
+                    <p>Select model</p>
+                  </TooltipContent>
+                </Tooltip>
+
                 <Button
                   size="icon-sm"
                   disabled={prompt.trim() === ""}

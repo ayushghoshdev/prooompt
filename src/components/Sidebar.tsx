@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "./ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function Sidebar() {
   const [width, setWidth] = useState(300);
@@ -79,13 +80,21 @@ export default function Sidebar() {
               className="transition-transform duration-1000 ease-in-out hover:rotate-360"
             />
           </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          >
-            <SidebarSimpleIcon weight="bold" className="size-5" />
-          </Button>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              >
+                <SidebarSimpleIcon weight="bold" className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{isSidebarCollapsed ? "Show sidebar" : "Collapse Sidebar"}</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
         {!isSidebarCollapsed && (
           <>
