@@ -16,9 +16,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const DEFAULT_MODEL_ID = "inclusionai/ring-2.6-1t:free";
 const MODEL_STORAGE_KEY = "prooompt_selected_model";
+const REASONING_STORAGE_KEY = "prooompt_reasoning_enabled";
 
 export default function AiPromptBox() {
   const [prompt, setPrompt] = useState("");
@@ -26,12 +32,19 @@ export default function AiPromptBox() {
   const [selectedModelId, setSelectedModelId] = useState(DEFAULT_MODEL_ID);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loadingModels, setLoadingModels] = useState(true);
+  const [isReasoningEnabled, setIsReasoningEnabled] = useState(false);
+  const [isReasoningPopoverOpen, setIsReasoningPopoverOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const storedModel = window.localStorage.getItem(MODEL_STORAGE_KEY);
     if (storedModel) {
       setSelectedModelId(storedModel);
+    }
+
+    const storedReasoning = window.localStorage.getItem(REASONING_STORAGE_KEY);
+    if (storedReasoning) {
+      setIsReasoningEnabled(storedReasoning === "true");
     }
   }, []);
 
@@ -62,6 +75,13 @@ export default function AiPromptBox() {
       window.localStorage.setItem(MODEL_STORAGE_KEY, selectedModelId);
     }
   }, [selectedModelId]);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      REASONING_STORAGE_KEY,
+      String(isReasoningEnabled),
+    );
+  }, [isReasoningEnabled]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -170,16 +190,53 @@ export default function AiPromptBox() {
                 </Tooltip>
 
                 <Tooltip>
-                  <TooltipTrigger asChild>
-                    <LightbulbIcon
-                      size={18}
-                      weight="bold"
-                      className="cursor-pointer hover:text-foreground transition-colors"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Reasoning</p>
-                  </TooltipContent>
+                  <Popover
+                    open={isReasoningPopoverOpen}
+                    onOpenChange={setIsReasoningPopoverOpen}
+                  >
+                    <TooltipTrigger asChild>
+                      <PopoverTrigger asChild>
+                        <LightbulbIcon
+                          size={18}
+                          weight="bold"
+                          className={`cursor-pointer 
+                            ${
+                              isReasoningEnabled
+                                ? "text-primary/80 hover:text-primary"
+                                : "hover:text-foreground"
+                            } transition-colors`}
+                        />
+                      </PopoverTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Reasoning</p>
+                    </TooltipContent>
+                    <PopoverContent className="w-69">
+                      <div className="grid gap-4">
+                        <div className="space-y-2">
+                          <h4 className="leading-none font-medium">
+                            Reasoning
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            When enabled, models will generate a step-by-step
+                            breakdown of their logic before providing a final
+                            answer. This may increase response times.
+                          </p>
+                          <Button
+                            className="w-full"
+                            onClick={() => {
+                              setIsReasoningEnabled(!isReasoningEnabled);
+                              setIsReasoningPopoverOpen(false);
+                            }}
+                          >
+                            {isReasoningEnabled
+                              ? "Disable reasoning"
+                              : "Enable reasoning"}
+                          </Button>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </Tooltip>
               </div>
 
