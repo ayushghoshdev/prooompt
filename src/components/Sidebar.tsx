@@ -10,13 +10,31 @@ import Link from "next/link";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { createClient } from "@/lib/supabase/client";
+import { User } from "@supabase/supabase-js";
 
 export default function Sidebar() {
+  const [user, setUser] = useState<User | null>(null);
   const [width, setWidth] = useState(300);
   const [isDragging, setIsDragging] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isChatsCollapsed, setIsChatsCollapsed] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const onMouseDown = () => {
     setIsDragging(true);
@@ -52,20 +70,22 @@ export default function Sidebar() {
     };
   }, [isDragging, onMouseMove, onMouseUp]);
 
+  const isActuallyCollapsed = !user || isSidebarCollapsed;
+
   return (
     <>
       <div
         ref={sidebarRef}
-        style={!isSidebarCollapsed ? { width: `${width}px` } : {}}
+        style={!isActuallyCollapsed ? { width: `${width}px` } : {}}
         className={
-          isSidebarCollapsed
+          isActuallyCollapsed
             ? "fixed top-4 left-4 z-50 flex items-center gap-4 text-white"
             : "h-screen text-white p-4 relative"
         }
       >
         <div
           className={
-            isSidebarCollapsed
+            isActuallyCollapsed
               ? "flex items-center gap-2"
               : "flex items-center justify-between"
           }
@@ -81,22 +101,26 @@ export default function Sidebar() {
             />
           </Link>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              >
-                <SidebarSimpleIcon weight="bold" className="size-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{isSidebarCollapsed ? "Show sidebar" : "Collapse Sidebar"}</p>
-            </TooltipContent>
-          </Tooltip>
+          {user && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                >
+                  <SidebarSimpleIcon weight="bold" className="size-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>
+                  {isSidebarCollapsed ? "Show sidebar" : "Collapse Sidebar"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
-        {!isSidebarCollapsed && (
+        {user && !isSidebarCollapsed && (
           <>
             <div className="w-full bg-secondary text-muted-foreground rounded-lg mt-4 px-4 py-2">
               <div className="flex items-center justify-between">
