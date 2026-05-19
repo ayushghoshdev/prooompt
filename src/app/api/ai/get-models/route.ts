@@ -5,14 +5,28 @@ interface ModelPricing {
   completion?: string;
 }
 
+interface ModelArchitecture {
+  modality?: string;
+  input_modalities?: string[];
+  output_modalities?: string[];
+  tokenizer?: string;
+  instruct_type?: string | null;
+}
+
+interface TopProvider {
+  context_length: number;
+  max_completion_tokens?: number;
+  is_moderated: boolean;
+}
+
 interface OpenRouterModel {
   id: string;
   name: string;
   description?: string;
   context_length?: number;
-  architecture?: string;
+  architecture?: ModelArchitecture;
   pricing?: ModelPricing;
-  top_provider?: string;
+  top_provider?: TopProvider;
 }
 
 interface OpenRouterModelsResponse {
@@ -35,15 +49,25 @@ export async function GET(req: Request) {
 
     const data: OpenRouterModelsResponse = await response.json();
 
-    const freeModels: OpenRouterModel[] = data.data.filter(
+    const filteredModels: OpenRouterModel[] = data.data.filter(
       (model: OpenRouterModel) => {
+        // Filter for free models
         const promptPrice = parseFloat(model.pricing?.prompt || "0");
-        const completetionPrice = parseFloat(model.pricing?.completion || "0");
-        return promptPrice == 0 && completetionPrice == 0;
+        const completionPrice = parseFloat(model.pricing?.completion || "0");
+        const isFree = promptPrice === 0 && completionPrice === 0;
+
+        // Filter for text-only output models
+        const outputModalities = model.architecture?.output_modalities;
+        const isTextOnlyOutput =
+          Array.isArray(outputModalities) &&
+          outputModalities.length === 1 &&
+          outputModalities[0] === "text";
+
+        return isFree && isTextOnlyOutput;
       },
     );
 
-    const formattedModels = freeModels.map((model: OpenRouterModel) => ({
+    const formattedModels = filteredModels.map((model: OpenRouterModel) => ({
       id: model.id,
       name: model.name,
       description: model.description,
